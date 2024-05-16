@@ -1,9 +1,11 @@
+const { create } = require('hbs');
 const Task = require('../models/Task.js');
 
 getAllTasks = (req, res) => {
     Task.find()
+        .sort({ createdAt: -1 })
         .then((tasks) => {
-            res.send(tasks);
+            res.render('index.hbs', { tasks }); // render the tasks view with the tasks data
         })
         .catch((err) => {
             res.status(500).send({
@@ -37,7 +39,6 @@ createTask = (req, res) => {
 };
 
 findTaskById = (req, res) => {
-    debugger;
     const id = req.params.id;
     Task.findById(id)
         .then((task) => {
@@ -62,9 +63,11 @@ findTaskById = (req, res) => {
 
 editTaskById = (req, res) => {
     const id = req.params.id;
+    console.log(id);
+    console.log(req.body);
     Task.findByIdAndUpdate(id, req.body)
         .then((task) => {
-            return res.status(200).send(task);
+            return res.status(200).redirect('/tasks');
         })
         .catch((err) => {
             if (err.kind === 'ObjectId') {
@@ -82,7 +85,7 @@ deleteTaskById = (req, res) => {
     const id = req.params.id;
     Task.findByIdAndDelete(id)
         .then((task) => {
-            return res.status(200).send(task);
+            return res.status(200).redirect('/tasks');
         })
         .catch((err) => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
@@ -124,6 +127,20 @@ toggleCompleteTask = (req, res) => {
         });
 };
 
+filterTasksByTitle = (req, res) => {
+    let userQuery = req.query.q;
+    let queryTasks = Task.find({ title: { $regex: userQuery, $options: 'i' } })
+        .then((tasks) => {
+            console.log(tasks);
+            res.render('index.hbs', { tasks });
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message: err.message || 'Error occurred while filtering tasks',
+            });
+        });
+};
+
 module.exports = {
     createTask,
     getAllTasks,
@@ -131,4 +148,5 @@ module.exports = {
     editTaskById,
     deleteTaskById,
     toggleCompleteTask,
+    filterTasksByTitle,
 };
