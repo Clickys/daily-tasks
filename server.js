@@ -5,8 +5,12 @@ const hbs = require('hbs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const taskRouter = require('./routes/TasksRouter.js');
-const User = require('./models/User.js');
-const jwt = require('jsonwebtoken');
+const authRoutes = require('./routes/authRoutes.js');
+const authorization = require('./middleware/authorization.js');
+const Cookies = require('cookies');
+
+// const User = require('./models/User.js');
+// const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
@@ -19,6 +23,7 @@ app.set('view engine', 'hbs');
 // set up views directory and public directory
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(Cookies.express());
 
 // Connect to MongoDB
 mongoose
@@ -42,46 +47,5 @@ hbs.registerHelper('formatDate', (date) => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-    res.render('login.hbs');
-});
-
-app.use('/tasks', taskRouter);
-
-User.create({
-    email: 'koc.clicky@gmail.com',
-    password: 'password',
-});
-
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    const isPasswordCorrect = user && user.password === password;
-    if (isPasswordCorrect) {
-        const token = jwt.sign({ email, password }, process.env.JWT_SECRET, {
-            expiresIn: '1h',
-        });
-        res.json({ token });
-    } else {
-        res.send('Login failed');
-    }
-});
-
-app.get('/protected', (req, res) => {
-    const token = req.headers['authorization'];
-    console.log(token);
-
-    if (!token) {
-        return res.status(403).json({ message: 'No token provided' });
-    }
-
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res
-                .status(500)
-                .json({ message: 'Failed to authenticate token' });
-        }
-        // Token is valid
-        res.json({ message: 'Welcome to the protected route!', user: decoded });
-    });
-});
+app.use('/tasks', authorization.requireAuth, taskRouter);
+app.use('/', authRoutes);

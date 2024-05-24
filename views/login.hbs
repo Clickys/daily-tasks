@@ -1,42 +1,46 @@
-<html>
+<html lang='en'>
     <head>
-        <title>Login/Signup</title>
+        <meta charset='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <title>Login Form</title>
         <style>
-            body { background-color: #333; color: #fff; font-family: Arial,
-            sans-serif; display: flex; justify-content: center; align-items:
-            center; height: 100vh; margin: 0; } .form-container {
-            background-color: #444; padding: 20px; border-radius: 5px; }
-            .form-container input { display: block; width: 100%; padding: 10px;
-            margin-bottom: 10px; border: none; border-radius: 5px; }
-            .form-container button { display: block; width: 100%; padding: 10px;
-            border: none; border-radius: 5px; background-color: #888; color:
-            #fff; cursor: pointer; } .form-container button:hover {
-            background-color: #aaa; }
+            body { display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; background: linear-gradient(to right,
+            #4e54c8, #8f94fb); font-family: 'Roboto', sans-serif; color: #fff; }
+            .login-form1 { background-color: rgba(0, 0, 0, 0.7); padding: 30px;
+            border-radius: 10px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            text-align: center; width: 100%; max-width: 400px; transition:
+            transform 0.3s ease; } .login-form:hover { transform: scale(1.05); }
+            form { display: flex; flex-direction: column; } label {
+            margin-bottom: 8px; font-weight: bold; } input { margin-bottom:
+            16px; padding: 12px; border: none; border-radius: 6px;
+            background-color: #1e1e1e; color: #fff; font-size: 1rem; transition:
+            background-color 0.3s ease, box-shadow 0.3s ease; } input:focus {
+            background-color: #333; box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            outline: none; } button { padding: 12px; border: none;
+            border-radius: 6px; background-color: #007bff; color: #fff;
+            font-size: 1rem; font-weight: bold; cursor: pointer; transition:
+            background-color 0.3s ease, transform 0.3s ease; } button:hover {
+            background-color: #0056b3; transform: scale(1.05); } .email-error,
+            .password-error { color: #ff4d4d; margin-top: -10px; margin-bottom:
+            20px; font-size: 0.9rem; font-weight: bold; }
         </style>
     </head>
     <body>
-        <div class='form-container'>
-            <form action='/login' method='POST'>
-                <input type='email' name='email' placeholder='Email' required />
-                <input
-                    type='password'
-                    name='password'
-                    placeholder='Password'
-                    required
-                />
+        <div class='login-form1'>
+            <form class='login-form' method='POST' action='/login'>
+                <h2>Login</h2>
+                <label for='email'>Email:</label>
+                <input type='email' id='email' name='email' required />
+                <div class='email-error'></div>
+
+                <label for='password'>Password:</label>
+                <input type='password' id='password' name='password' required />
+                <div class='password-error'></div>
+
                 <button type='submit'>Login</button>
             </form>
-            <form action='/signup' method='POST'>
-                <input type='text' name='name' placeholder='Name' required />
-                <input type='email' name='email' placeholder='Email' required />
-                <input
-                    type='password'
-                    name='password'
-                    placeholder='Password'
-                    required
-                />
-                <button type='submit'>Sign Up</button>
-            </form>
         </div>
+        <script src='js/login.js'></script>
     </body>
 </html>
